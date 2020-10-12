@@ -677,7 +677,7 @@ class HelloWorld extends React.Component {
         <NameForm />
 
         <Example />
-        <FriendStatus />
+        {/* <FriendStatus /> */}
       </div>
     );
 
