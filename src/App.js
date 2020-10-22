@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import BasicConcepts from './pages/basicConcepts';
 import Hooks from './pages/hooks';
+import MoreInfo from './pages/moreInfo';
+import Api from './pages/api';
 import './App.css';
 // import Remarkable from 'remarkable'
 
@@ -50,6 +52,8 @@ class HelloWorld extends React.Component {
       <div>
         {/* <BasicConcepts /> */}
         <Hooks />
+        <MoreInfo />
+        <Api />
       </div>
     );
 

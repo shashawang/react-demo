@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer, useRef, useImperativeHandle, forwardRef } from 'react';
 
 // useState的语法是解构赋值；State 变量可以很好地存储对象和数组，因此，你仍然可以将相关数据分为一组
 //  useState 更新变量是通过替换而不是合并，可以用函数式的 setState 结合展开运算符来达到合并更新对象的效果。
@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 //  });
 // 将函数传递给 setState返回的函数：用于新的 state 需要通过使用先前的 state 计算得出。该函数将接收先前的 state，并返回一个更新后的值。
 // 如果初始 state 需要通过复杂计算获得，则可以传入一个函数，在函数中计算并返回初始的 state，此函数只在初始渲染时被调用
-// 更新渲染：给State Hook 的更新函数传入当前的 state 时，React 将跳过子组件的渲染及 effect 的执行。（使用 Object.is 比较算法 来比较 state。）可能仍需要渲染当前组件，但不会对组件树的“深层”节点
+// 更新渲染：给State Hook 的更新函数传入当前的 state 时，React 将跳过子组件的渲染及 effect 的执行。（使用 Object.is 比较算法 来比较 state。）可能仍需要渲染当前组件，但不会对组件树的“深层”节点，Reducer Hook同理
 // effectHook
 // 1
 class Example extends React.Component {
@@ -264,7 +264,98 @@ function Counter({initialCount}) {
   );
 }
 
+// useContext(MyContext) 相当于 class 组件中的 static contextType = MyContext 或者 <MyContext.Consumer>
+
+
+function Counter2() {
+  const initialState = {count: 0};
+  
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'increment':
+        return {count: state.count + 1};
+      case 'decrement':
+        return {count: state.count - 1};
+      default:
+        throw new Error();
+    }
+  }
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+      <button onClick={() => dispatch({type: 'increment'})}>+</button>
+    </>
+  );
+}
+
+
+function Counter3({initialCount}) {
+  function init(initialCount) {
+    return {count: initialCount};
+  }
+  
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'increment':
+        return {count: state.count + 1};
+      case 'decrement':
+        return {count: state.count - 1};
+      case 'reset':
+        return init(action.payload);
+      default:
+        throw new Error();
+    }
+  }
+  const [state, dispatch] = useReducer(reducer, initialCount, init);
+  return (
+    <>
+      Count: {state.count}
+      <button
+        onClick={() => dispatch({type: 'reset', payload: initialCount})}>
+        Reset
+      </button>
+      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+      <button onClick={() => dispatch({type: 'increment'})}>+</button>
+    </>
+  );
+}
+
+// useCallback(fn, deps) 相当于 useMemo(() => fn, deps)
+// 传入 useMemo 的函数会在渲染期间执行。请不要在这个函数内部执行与渲染无关的操作，诸如副作用这类的操作属于 useEffect 的适用范畴，而不是 useMemo
+// 如果没有提供依赖项数组，useMemo 在每次渲染时都会计算新的值
+
+// useRef() 比 ref 属性更有用。它可以很方便地保存任何可变值
+// 当 ref 对象内容发生变化时，useRef 并不会通知你。变更 .current 属性不会引发组件重新渲染
+
+function TextInputWithFocusButton() {
+  const inputEl = useRef(null);
+  const onButtonClick = () => {
+    // `current` 指向已挂载到 DOM 上的文本输入元素
+    inputEl.current.focus();
+  };
+  return (
+    <>
+      <input ref={inputEl} type="text" />
+      <button onClick={onButtonClick}>Focus the input</button>
+    </>
+  );
+}
+
+function FancyInput(props, ref) {
+  const inputRef = useRef();
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current.focus();
+    }
+  }));
+  return <input ref={inputRef} type="text" />;
+}
+FancyInput = forwardRef(FancyInput);
+
 export default function Hooks() {
+  return (
 		<div>
 			<Example />
 			{/* <FriendStatus friend={{id:10}} />
@@ -279,6 +370,13 @@ export default function Hooks() {
 			<Reservation />
 			
 			<Counter initialCount="1" />
+      <br />
+			<Counter2 />
+      <br />
+			<Counter3 initialCount={6} />
+
+      <TextInputWithFocusButton />
+      <FancyInput />
 		</div>
 	)
 }
