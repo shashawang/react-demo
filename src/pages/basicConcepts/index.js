@@ -172,7 +172,10 @@ class BasicConcepts extends React.Component {
 			}
 
 			tick() {
-				this.setState({  // State 的更新可能是异步的, 可以让 setState() 接收一个函数而不是一个对象。这个函数用上一个 state 作为第一个参数，将此次更新被应用时的 props 做为第二个参数
+				this.setState({  
+					// State 的更新可能是异步的, 可以让 setState() 接收一个函数而不是一个对象。这个函数用上一个 state 作为第一个参数，将此次更新被应用时的 props 做为第二个参数
+					// 在调用 setState() 后立即读取 this.state：使用 componentDidUpdate 或者 setState 的回调函数（setState(updater, callback)），这两种方式都可以保证在应用更新后触发
+					// 需基于之前的 state 来设置当前的 state，请阅读下述关于参数 updater 的内容。
 					date: new Date()
 				})
 			}
@@ -238,6 +241,7 @@ class BasicConcepts extends React.Component {
 		}
 
 		// 7 条件渲染
+		// From:Api--React.Component render():布尔类型或 null。什么都不渲染。（主要用于支持返回 test && <Child /> 的模式，其中 test 为布尔类型？？？
 		// 7.1
 		function UserGreeting(props) {
 			return <h1>Welcome back!</h1>;
