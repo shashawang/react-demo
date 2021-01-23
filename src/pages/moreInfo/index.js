@@ -234,7 +234,7 @@ class MouseWithCat extends React.Component {
 
   render() {
     return (
-      <div style={{ height: '100vh' }} onMouseMove={this.handleMouseMove}>
+      <div style={{ height: '5vh' }} onMouseMove={this.handleMouseMove}>
 
         {/*
           我们可以在这里换掉 <p> 的 <Cat>   ......

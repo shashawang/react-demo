@@ -1,4 +1,7 @@
 import React from 'react';
+import { Select } from 'antd';
+import 'antd/dist/antd.css';
+const { Option } = Select;
 
 // 3
 class BasicConcepts extends React.Component {
@@ -429,13 +432,15 @@ class BasicConcepts extends React.Component {
 					)}
 				</ul>
 			);
-			const content = props.posts.map((post) =>
-				<div key={post.id}>
+			const content = props.posts.map((post) => {
+        return (
+          <div key={post.id}>
 					<h3>{post.id}</h3>
 					<h3>{post.title}</h3>
 					<p>{post.content}</p>
 				</div>
-			);
+        )
+      });
 			return (
 				<div>
 					{sidebar}
@@ -798,11 +803,78 @@ class BasicConcepts extends React.Component {
 		// 2.3 自上而下或者自下而上构建：
 		// 3. 确定 state 的最小（且完整）表示：非props、可变数据、最小集合（其他数据均由它们计算产生）
 		// 4. 确定 state 放置的位置
-		// 5. 反向数据流
+    // 5. 反向数据流
+    
+    // 改样式：下拉框样式；下拉框位置；大屏效果
+    const tempData = {
+      '2018-1': ['18', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', '劣Ⅴ/中营养', 'Ⅴ/高营养', 'Ⅲ'],
+      '2019-1': ['19', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', '劣Ⅴ/中营养', 'Ⅴ/高营养', 'Ⅲ'],
+      '2020-1': ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', '劣Ⅴ/中营养', 'Ⅴ/高营养', 'Ⅲ'],
+      '2020-2': ['Ⅱ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', '劣Ⅴ/中营养', 'Ⅴ/高营养', 'Ⅲ'],
+      '2020-3': ['Ⅲ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', '劣Ⅴ/中营养', 'Ⅴ/高营养', 'Ⅲ'],
+      '2020-4': ['Ⅳ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', '劣Ⅴ/中营养', 'Ⅴ/高营养', 'Ⅲ'],
+    }
+    class Test extends React.Component {
+      constructor(props) {
+				super(props);
+				this.handleYearChange = this.handleYearChange.bind(this);
+				this.state = { currentDateList: tempData['2020-1'], currentYear: '2020', currentMonth: '1' };
+      }
+      getPieData = (data) => {
+        let computedData = [], uniqueData = []
+        data.forEach(item => {
+          if(!uniqueData.includes(item)) {
+            uniqueData.push(item)
+            computedData.push({name: item, count: 1})
+          } else {
+            computedData.forEach((i, index) => {
+              if (i.name === item) {
+                i.count += 1
+              }
+            })
+          }
+        })
+        console.log(computedData, uniqueData)
+      }
+      handleYearChange = (value) => {
+        this.setState({currentYear: value, currentDateList: tempData[value+ '-' + this.state.currentMonth]}, () => {
+          // console.log(this.state.currentDateList)
+          this.getPieData(this.state.currentDateList)
+        })
+      }
+      handleMonthChange = (value) => {
+        this.setState({currentMonth: value, currentDateList: tempData[this.state.currentYear+ '-' + value]}, () => {
+          // console.log(this.state.currentDateList)
+          this.getPieData(this.state.currentDateList)
+        })
+      }
+      componentWillMount() {
+        this.getPieData(this.state.currentDateList)
+      }
+      render() {
+        const month = [1,2,3,4,5,6,7,8,9,10,11,12]
+        return (
+          <div>
+            <Select defaultValue="2020" style={{ width: 120 }} onChange={this.handleYearChange}>
+              <Option value="2020">2020年</Option>
+              <Option value="2019">2019年</Option>
+              <Option value="2018">2018年</Option>
+            </Select>
+            <Select defaultValue="1" style={{ width: 120 }} onChange={this.handleMonthChange}>
+            {month.map((item) => 
+              <Option value={item}>{item+'月'}</Option>
+            )}
+            </Select>
+            {this.state.currentDateList}
+          </div>
+        )
+      }
+    }
 
 		return (
 			<div>
 				{/* <TodoList /> */}
+        < Test />
         <h3>TODO</h3>
         <TodoList items={this.state.items} />
         <form onSubmit={this.handleSubmit}>

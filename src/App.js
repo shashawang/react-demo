@@ -50,7 +50,7 @@ class HelloWorld extends React.Component {
   render() {
     return (
       <div>
-        {/* <BasicConcepts /> */}
+        <BasicConcepts />
         <Hooks />
         <MoreInfo />
         <Api />

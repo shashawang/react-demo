@@ -49,6 +49,13 @@ const FancyButton = React.forwardRef((props, ref) => (
 ));
 const ref = React.createRef();
 
+function createMarkup() {
+  return {__html: 'First &middot; Second'};
+}
+
+function MyComponent() {
+  return <div dangerouslySetInnerHTML={createMarkup()} />;
+}
 export default function MoreInfo() {
   useEffect(() => {
     console.log('ref.current', ref.current);
@@ -57,6 +64,8 @@ export default function MoreInfo() {
 		<div>
       <h1>Api</h1>
 			<FancyButton ref={ref}>Click me!</FancyButton>;
+
+      <MyComponent />
 		</div>
 	)
 }
